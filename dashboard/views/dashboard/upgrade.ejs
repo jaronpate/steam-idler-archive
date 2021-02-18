@@ -1,0 +1,222 @@
+<%- include("../partials/header.ejs") -%>
+
+<script src="https://js.stripe.com/v3/"></script>
+
+<body>
+   <form class="ui form accounts" id="payment-form">
+      <div class="title">
+         <h1 style="display: inline; margin: 0 25px 0 0;">Upgrade Your Account</h1>
+         <a class="dButton new" onclick="submit()"><i class="cart plus icon"></i></a>
+      </div>
+         <div class="field" style="margin-bottom: 10px;">
+            <label>Subscription</label>
+            <div class="ui selection fluid dropdown" id="subscription">
+               <input type="hidden" name="subscription" id="subType">
+               <i class="dropdown icon"></i>
+               <div class="default text">Select a plan</div>
+               <div class="menu">
+                  <div class="item" data-value="price_1HAGneAgzpuIPCr9oyEcLBoZ">$4 - Basic (1 account, 1 game)</div>
+                  <div class="item" data-value="price_1HAl9OAgzpuIPCr93txDZZFH">$6 - Advanced (1 account, 32 games)</div>
+               </div>
+            </div>
+         </div>
+         <div class="field">
+            <label>Credit/Debit Card</label>
+           <div id="card-element">
+             <!-- A Stripe Element will be inserted here. -->
+           </div>
+       
+           <!-- Used to display form errors. -->
+           <div id="card-errors" role="alert"></div>
+         </div>
+      </form>
+</body>
+<script>
+   const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      onOpen: (toast) => {
+         toast.addEventListener('mouseenter', Swal.stopTimer)
+         toast.addEventListener('mouseleave', Swal.resumeTimer)
+      }
+   });
+
+   const stripe = Stripe('<%-stripeKey-%>');
+   const elements = stripe.elements();
+   var style = {
+   base: {
+      color: 'white',
+      fontFamily: '"Open Sans", sans-serif',
+      fontSmoothing: 'antialiased',
+      fontSize: '16px',
+      '::placeholder': {
+         color: '#cccccc',
+      },
+      iconColor: 'white'
+   },
+   invalid: {
+      color: '#fa755a',
+      iconColor: '#fa755a'
+   }
+   };
+
+   let card = elements.create('card', {style: style});
+   card.mount('#card-element');
+
+   let subType = document.getElementById('subType');
+   let form = document.getElementById('payment-form');
+
+   function submit(){
+         form.classList.add('loading');
+      stripe.createPaymentMethod({
+         type: 'card',
+         card: card
+      }).then(result => {
+         if(result.error){
+            Toast.fire({
+                  icon: 'error',
+                  title: result.error.message
+               });
+            return form.classList.remove('loading');
+         }
+         console.log(result.paymentMethod.id)
+         console.log(subType.value)
+         $.post('/dashboard/upgrade', {
+            paymentMethod: result.paymentMethod.id, 
+            subType: subType.value
+         }, (data) => {
+            if(data.error){
+               Toast.fire({
+                  icon: 'error',
+                  title: data.error
+               });
+               form.classList.remove('loading');
+            } else if(data.success) {
+               Toast.fire({
+                  icon: 'success',
+                  title: data.success
+               });
+               setTimeout(() => {
+                  location.href = '/dashboard'
+               }, 2500)
+            } else {
+               location.href = '/dashboard'
+            }
+         });
+      });
+   }
+   $('.dropdown')
+  .dropdown();
+</script>
+<style>
+   .ui.loading.form:before{
+      background: rgba(0,0,0,.8) !important;
+   }
+   #payment-form{
+      padding-bottom: 25px;
+   }
+   #subscription, #subscription .menu, #subscription .menu .item{
+      background-color: #232323 !important;
+      color: white !important;
+      border: none;
+      outline: none;
+   }
+   #subscription .menu .item:hover{
+      background-color: #272727 !important;
+   }
+   .accounts{
+      width: fit-content !important;
+      margin: 25px auto !important;
+      background-color: #1e1e1e;
+      padding: 15px 25px;
+   }
+   .accounts .title{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+   }
+   .account{
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      margin: 10px auto;
+   }
+   .account h4{
+      display: inline;
+      font-weight: 600;
+      margin-right: 5px;
+   }
+   .dButton{
+      padding: 5px 20px;
+      margin-left: 5px;
+      color: white;
+      font-weight: bold;
+      background-color: #7a7a7a;
+      transition: background-color 0.1s;
+   }
+   .dButton:hover{
+      color: white;
+      background-color: #494a4c;
+   }
+   .dButton i{
+      margin: 0;
+   }
+   .dButton.new{
+      font-size: 1rem;
+      background-color: #14b363;
+      cursor: pointer;
+   }
+   .dButton.new:hover{
+      background-color: #14b36488;
+   }
+   .stat{
+      padding: 0 5px;
+      border-left: solid 1px white;
+      /* border-right: solid 1px white; */
+   }
+   #username, #password, #games, #autoMsg{
+      color: white;
+   }
+   form label{
+      color: white !important;
+   }
+   .ui.toggle.checkbox#toggle input:checked~.box, .ui.toggle.checkbox#toggle input:checked~label{
+      color: white !important;
+   }
+   .ui.toggle.checkbox#toggle input:focus~.box, .ui.toggle.checkbox#toggle input:focus~label{
+      color: white !important;
+   }
+   .ui.toggle.checkbox#toggle .box:before, .ui.toggle.checkbox#toggle label:before{
+      background: #252525;
+   }
+   .ui.toggle.checkbox#toggle input:checked~.box:before, .ui.toggle.checkbox#toggle input:checked~label:before{
+      background: #302b63 !important;
+   }
+
+   @media only screen and (max-width: 750px) {
+      .accounts{
+         width: 95% !important;
+      }
+   }
+   
+   @media only screen and (max-width: 850px) {
+      .account .info, .account .controls{
+         margin: 10px 0;
+         text-align: center;
+      }
+      .account{
+         flex-direction: column;
+      }
+   }
+   
+   @media only screen and (max-width: 424px) {
+      #header .ui.avatar.image{
+         display: none;
+      }
+   }
+</style>
+</html>

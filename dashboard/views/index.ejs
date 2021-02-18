@@ -1,0 +1,162 @@
+<%- include("./partials/header.ejs") -%>
+<body>
+   <div class="jumbo">
+      <div class="info">
+         <img src="/assets/branding/logo.svg" alt="">
+         <h2>The easy, automated Steam Idler</h2>
+         <div class="actions">
+            <a class="getStarted" href="/dashboard/accounts/add">Get Started</a>
+         </div>
+      </div>
+   </div>
+   <div class="content">
+      <div class="ads">
+         <div class="ad">
+            <i class="plug icon"></i>
+            <h3>Idle Anytime</h3>
+            <p>Idle no matter where you are; even when you are offline</p>
+         </div>
+         <div class="ad">
+            <i class="user secret icon"></i>
+            <h3>Appear offline</h3>
+            <p>Silently idle your account without anyone knowing</p>
+         </div>
+         <div class="ad">
+            <i class="steam icon"></i>
+            <h3>Automate Actions</h3>
+            <p>Such as responding to messages automatically while idling</p>
+         </div>
+      </div>
+      <div id="ui">
+         <div class="info">
+            <h2>Web Dashboard</h2>
+            <p>Configuration/management is easy and quick with the web dashboard.</p>
+         </div>
+         <img src="/assets/ui.svg">
+      </div>
+   </div>
+</body>
+<style>
+   #ui{
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+   }
+   #ui img{
+      width: 80%;
+      margin: auto;
+      box-shadow: 0px 0px 20px 3px rgba(0, 0, 0, 0.3);
+   }
+   #ui .info{
+      margin: 25px 25px;
+   }
+   .actions{
+      /* display: flex; */
+      flex-direction: row;
+      align-items: center;
+      margin-top: 15px;
+      margin-left: 10px;
+   }
+   .actions a{
+      background-color: #15cd72;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      padding: 10px 25px;
+      width: fit-content;
+      transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0.3);
+   }
+   .actions a:hover{
+      background-color: #15cd71e1;
+      box-shadow: 0px 0px 20px 3px rgba(0, 0, 0, 0.15);
+   }
+   .ad{
+      background-color: #1e1e1e;
+      width: 30%;
+      padding: 25px;
+      margin: 25px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: -3px 3px 20px 3px rgba(0, 0, 0, 0.4);
+   }
+   .ad p {
+      text-align: center;
+   }
+   .ad i {
+      font-size: 3em;
+   }
+   .ad i::before {
+      vertical-align: sub;
+   }
+   .ad h3 {
+      margin: 5px 0 0 0;
+   }
+   .ads{
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+      width: 80%;
+      margin: auto;
+   }
+   .content{
+      position: relative;
+      top: -23vh;
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 50px;
+   }
+   .jumbo{
+      width: 100%;
+      height: 60vh;
+      background: url('/assets/bg.svg');
+      background-size: cover;
+      background-position: bottom;
+      background-repeat: no-repeat;
+      position: relative;
+      top: 0px;
+   }
+   .jumbo .info{
+      position: absolute;
+      top: 50px;
+      left: 50px;
+      display: inline-flex;
+      flex-direction: column;
+   }
+   .jumbo .info img{
+      width: 50%;
+   }
+   .jumbo .info h2{
+      display: inline;
+      font-size: 3vw;
+   }
+   @media only screen and (max-width: 1023px) {
+      .ads{
+         flex-direction: column;
+         align-items: center;
+      }
+      .ad{
+         width: 70%;
+      }
+   }
+   @media only screen and (max-width: 767px) {
+      .jumbo .info h2{
+         font-size: 1.5em;
+      }
+      .ad{
+         width: 90%;
+      }
+   }
+   @media only screen and (max-width: 550px) {
+      .jumbo .info h2{
+         font-size: 1em;
+      }
+   }
+   @media (min-width: 550px){
+      .column, .columns {
+         margin-left: 0;
+      }
+   }
+</style>
+</html>

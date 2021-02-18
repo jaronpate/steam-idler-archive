@@ -1,0 +1,35 @@
+<%- include("../partials/head.ejs") %>
+
+<body>
+   <div class="row" style="height: 100vh;">
+      <div class="five columns left-login">
+         <img src="/assets/branding/logo.svg" alt="">
+      </div>
+      <div class="seven columns right-login">
+         <div style="width: 90%; text-align: center;" id="right-login-div">
+            <h1>Register</h1>
+            <form class="ui large form" style="margin: auto;">
+               <a class="ui button" id="steam-login-btn" href="/auth/steam">Login with <i class="steam icon"></i></a>
+               <p>Have an account already? <a href="/login" class="link">Login here.</a></p>
+            </form>
+         </div>
+      </div>
+   </div>
+</body>
+<script>
+   $('.ui.checkbox')
+   .checkbox();
+   $('.login-input input').on('focus', function(){
+      $(this).addClass('focus')
+   });
+   $('.login-input input').on('blur', function(){
+      if($(this).val() == '') $(this).removeClass('focus')
+   });
+   $('.message .close')
+  .on('click', function() {
+    $(this)
+      .closest('.message')
+      .transition('fade');
+   });
+</script>
+</html>

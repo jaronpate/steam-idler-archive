@@ -1,0 +1,200 @@
+<%- include("../partials/header.ejs") -%>
+<body>
+   <div class="accounts">
+      <div class="title">
+         <a class="dButtonSmall" href="/dashboard"><i class="left arrow icon"></i></a>
+         <h1 style="display: inline; margin: 0 25px;">Edit an Account</h1>
+         <a class="dButton new" onclick="submit()"><i class="plus icon"></i></a>
+      </div>
+      <form class="ui form" action="" style="margin: 0;">
+         <div class="two fields">
+            <div class="field">
+               <label>Account Name</label>
+               <div class="ui inverted transparent left icon input">
+                  <i class="user icon"></i>
+                  <input type="text" placeholder="Username" id="username" value="<%-account.settings.username-%>">
+               </div>
+            </div>
+            <div class="field">
+               <label>Password</label>
+               <div class="ui inverted transparent left icon input">
+                  <i class="key icon"></i>
+                  <input type="password" placeholder="Password" id="password" value="<%-account.settings.password-%>">
+               </div>
+            </div>
+         </div>
+         <div class="field">
+            <label>App ID's (List seperated by a comma)</label>
+            <div class="ui inverted transparent left icon input">
+               <i class="gamepad icon"></i>
+               <input type="text" name="gamestoplay" placeholder="Games" id="games" value="<%-account.settings.gamestoplay.join(',')-%>">
+            </div>
+            <a href="https://steamdb.info/apps/" target="blank_"><em>Find your game's App ID here</em></a>
+         </div>
+         <div class="field">
+            <label>TwoFactor Secret (optional)</label>
+            <div class="ui inverted transparent left icon input">
+               <i class="shield alternate icon"></i>
+               <input type="text" name="twofactorsecret" placeholder="**************" id="twofactor" value="<%-account.settings.password-%>">
+            </div>
+         </div>
+         <div class="field">
+            <label style="margin-bottom: 10px;">Miscellaneous</label>
+            <div class="ui inverted transparent left icon input">
+               <i class="comment icon"></i>
+               <input type="text" name="automessage" placeholder="Auto Message" id="autoMsg" value="<%-account.settings.automessage-%>">
+            </div>
+         </div>
+         <div class="field">
+            <div class="ui toggle checkbox" id="toggle">
+               <input type="checkbox" name="sendautomessage" id="autoToggle" <%-account.settings.sendautomessage === 'true' ? 'checked':''-%>>
+               <label for="autoToggle" style="cursor: pointer;">Autoresponder</label>
+             </div>
+         </div>
+         <div class="field">
+            <div class="ui toggle checkbox" id="toggle">
+               <input type="checkbox" name="silent" id="silent" value="false" <%-account.settings.silent === 'true' ? 'checked':''-%>>
+               <label for="silent" style="cursor: pointer;">Silent Mode (Don't trigger online status)</label>
+             </div>
+         </div>
+      </form>
+   </div>
+</body>
+<script>
+   function submit(){
+      let username = document.getElementById('username');
+      let password = document.getElementById('password');
+      let games = document.getElementById('games');
+      let twofactor = document.getElementById('twofactor');
+      let autoMsg = document.getElementById('autoMsg');
+      let autoToggle = document.getElementById('autoToggle');
+      let silent = document.getElementById('silent');
+      
+      let playme = games.value.split(',')
+      let idleme = playme.map(x => Number(x))
+
+      let settings = {
+         username: username.value,
+         password: password.value,
+         gamestoplay: idleme,
+         sendautomessage: autoToggle.checked,
+         automessage: autoMsg.value,
+         silent: silent.checked,
+      }
+      if(twofactor.value !== ""){
+         settings.twofactorsecret
+      }
+      console.log(settings)
+      $.post(`/dashboard/accounts/<%-account.id-%>/edit`, settings, (data) => {
+         console.log(data);
+         location.reload();
+      })
+   }
+</script>
+<style>
+   .accounts{
+      width: fit-content !important;
+      margin: 25px auto !important;
+      background-color: #1e1e1e;
+      padding: 15px 25px;
+   }
+   .accounts .title{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+   }
+   .account{
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      margin: 10px auto;
+   }
+   .account h4{
+      display: inline;
+      font-weight: 600;
+      margin-right: 5px;
+   }
+   .dButton{
+      padding: 5px 20px;
+      margin-left: 5px;
+      color: white;
+      font-weight: bold;
+      background-color: #7a7a7a;
+      transition: background-color 0.1s;
+   }
+   .dButtonSmall{
+      padding: 5px 10px;
+      margin-left: 5px;
+      color: white;
+      font-weight: bold;
+      background-color: #7a7a7a;
+      cursor: pointer;
+      transition: background-color 0.1s;
+   }
+   .dButtonSmall:hover{
+      color: white;
+      background-color: #494a4c;
+   }
+   .dButton:hover{
+      color: white;
+      background-color: #494a4c;
+   }
+   .dButton i, .dButtonSmall i{
+      margin: 0;
+   }
+   .dButton.new{
+      font-size: 1rem;
+      background-color: #14b363;
+      cursor: pointer;
+   }
+   .dButton.new:hover{
+      background-color: #14b36488;
+   }
+   .stat{
+      padding: 0 5px;
+      border-left: solid 1px white;
+      /* border-right: solid 1px white; */
+   }
+   #username, #password, #games, #autoMsg{
+      color: white;
+   }
+   form label{
+      color: white !important;
+   }
+   .ui.toggle.checkbox#toggle input:checked~.box, .ui.toggle.checkbox#toggle input:checked~label{
+      color: white !important;
+   }
+   .ui.toggle.checkbox#toggle input:focus~.box, .ui.toggle.checkbox#toggle input:focus~label{
+      color: white !important;
+   }
+   .ui.toggle.checkbox#toggle .box:before, .ui.toggle.checkbox#toggle label:before{
+      background: #252525;
+   }
+   .ui.toggle.checkbox#toggle input:checked~.box:before, .ui.toggle.checkbox#toggle input:checked~label:before{
+      background: #302b63 !important;
+   }
+
+   @media only screen and (max-width: 750px) {
+      .accounts{
+         width: 95% !important;
+      }
+   }
+   
+   @media only screen and (max-width: 850px) {
+      .account .info, .account .controls{
+         margin: 10px 0;
+         text-align: center;
+      }
+      .account{
+         flex-direction: column;
+      }
+   }
+   
+   @media only screen and (max-width: 424px) {
+      #header .ui.avatar.image{
+         display: none;
+      }
+   }
+</style>
+</html>

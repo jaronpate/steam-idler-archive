@@ -1,0 +1,230 @@
+<%- include("../partials/header.ejs") -%>
+<body>
+   <div class="accounts">
+      <div class="title">
+         <h1 style="display: inline; margin: 0;">Accounts</h1>
+         <a class="dButton new" href="/dashboard/accounts/add"><i class="plus icon"></i></a>
+      </div>
+      <% if(user.accounts.length < 1){ %>
+
+         <p style="text-align: center;">No idlers on account, <a href="/dashboard/accounts/add">add one here</a></p>
+      <% } %>
+      <% user.accounts.forEach(account => { %>
+         <div class="account">
+         <div class="info">
+            <i class="circle icon" style="color: <%- account.online ? '#14b363' : '#833a3a' -%>;" id="statusIcon"></i>
+            <h4><%-account.settings.username-%></h4>
+            <span class="stat"><%-account.totalHours + account.hours-%> hrs</span>
+            <span class="stat"><%-account.settings.gamestoplay.length-%> / <%-user.subscription.gameLimit-%> game<%-user.subscription.gameLimit > 1 ? 's' : ''-%></span>
+         </div>
+         <div class="controls">
+            <a class="dButton" href="/dashboard/accounts/<%-account.id-%>">Edit</a>
+            <a class="dButton stop" onclick="stop('<%-account.id-%>')">Stop</a>
+            <a class="dButton start startBtn" onclick="setStartAccount('<%-account.id-%>')">Start</a>
+            <a class="dButtonSmall remove" href="/dashboard/accounts/<%-account.id-%>/delete"><i class="trash icon"></i></a>
+         </div>
+      </div>
+      <% }) %>
+   </div>
+   <div class="ui basic mini modal" style="background-color: #1e1e1e;">
+      <!-- <div class="header">Start Idler</div> -->
+      <div class="content">
+         <div class="field">
+            <label>Auth Code</label>
+            <div class="ui inverted transparent left icon input">
+               <i class="key icon"></i>
+               <input type="text" placeholder="*****" id="authCode" autocomplete="off">
+            </div>
+         </div>
+         <input type="hidden" id="accountId">
+      </div>
+      <div class="actions">
+        <a class="ui approve dButton start" onclick="start()">Start Idler</a>
+        <a class="ui cancel dButton">Cancel</a>
+      </div>
+    </div>
+</body>
+<script>
+   const Toast = Swal.mixin({
+   toast: true,
+   position: 'top-end',
+   showConfirmButton: false,
+   timer: 3000,
+   timerProgressBar: true,
+   onOpen: (toast) => {
+      toast.addEventListener('mouseenter', Swal.stopTimer)
+      toast.addEventListener('mouseleave', Swal.resumeTimer)
+   }
+   });
+   
+   <% if(locals.message.error){ %>
+      Toast.fire({
+         icon: 'error',
+         title: "<%-message.error-%>"
+      })
+   <% } %>
+
+   let accountId = document.getElementById('accountId');
+   let authCode = document.getElementById('authCode');
+   let statusIcon = document.getElementById('statusIcon');
+   function stop(id){
+      $.post(`/dashboard/accounts/${id}/stop`, null)
+      .then(data => {
+         console.log(data);
+         location.reload()
+      })
+   }
+   function start(){
+      statusIcon.classList = "sync icon loadingIcon"
+      $.post(`/dashboard/accounts/${accountId.value}/start`, {code: authCode.value})
+      .then(data => {
+         console.log(authCode.value)
+         authCode.value = '';
+         accountId.value = '';
+         console.log(data);
+         if(data.error){
+            Toast.fire({
+               icon: 'error',
+               title: (data.error.eresult) ? 'Rate limited...': data.error
+            })
+            statusIcon.classList = "exclamation triangle icon errorIcon"
+         }
+         else{location.reload()}
+      })
+   }
+   function setStartAccount(id){
+      accountId.value = id
+   }
+   document.querySelectorAll('.startBtn').forEach(el => {
+      el.addEventListener('click', (e) => {
+         $('.ui.modal')
+         .modal('show');
+      });
+   });
+</script>
+<style>
+   @-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+   @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+   @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
+
+   .loadingIcon{
+      color: white !important;
+      -webkit-animation:spin 1s linear infinite;
+      -moz-animation:spin 1s linear infinite;
+      animation:spin 1s linear infinite;
+      transform-origin: center 70%;
+   }
+   .errorIcon{
+      color: #ad6200 !important;
+   }
+   .accounts{
+      width: 80% !important;
+      margin: 25px auto !important;
+      background-color: #1e1e1e;
+      padding: 15px 25px;
+   }
+   .accounts .title{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+   }
+   .account{
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      margin: 10px auto;
+   }
+   .account h4{
+      display: inline;
+      font-weight: 600;
+      margin-right: 5px;
+   }
+   .dButton{
+      padding: 5px 20px;
+      margin-left: 5px;
+      color: white;
+      font-weight: bold;
+      background-color: #7a7a7a;
+      cursor: pointer;
+      transition: background-color 0.1s;
+   }
+   .dButtonSmall{
+      padding: 5px 10px;
+      margin-left: 5px;
+      color: white;
+      font-weight: bold;
+      background-color: #494a4c;
+      cursor: pointer;
+      transition: background-color 0.1s;
+   }
+   .dButton i{
+      margin: 0;
+   }
+   .dButtonSmall i{
+      margin: 0;
+   }
+   .dButton:hover{
+      color: white;
+      background-color: #494a4c;
+   }
+   .dButton.new{
+      font-size: 1rem;
+      /* vertical-align: middle; */
+      background-color: #3e5add;
+   }
+   .dButton.stop{
+      background-color: #833a3a;
+   }
+   .dButton.start{
+      background-color: #14b363;
+   }
+   .dButton.new:hover{
+      background-color: #3e5bdd86;
+   }
+   .dButton.stop:hover{
+      background-color: #833a3a86;
+   }
+   .dButton.start:hover{
+      background-color: #14b3647c;
+   }
+   .dButtonSmall.remove:hover{
+      color: white;
+      background-color: #833a3a;
+   }
+   .stat{
+      padding: 0 5px 0 8px;
+      border-left: solid 1px white;
+      /* border-right: solid 1px white; */
+   }
+   .ui.modal>.actions{
+      margin-bottom: 5px;
+   }
+   @media only screen and (max-width: 750px) {
+      .accounts{
+         width: 95% !important;
+      }
+   }
+   @media only screen and (max-width: 767px) {
+      .ui.modal>.actions{
+         margin-bottom: 15px;
+      }
+   }
+   
+   @media only screen and (max-width: 850px) {
+      .account .info, .account .controls{
+         margin: 10px 0;
+         text-align: center;
+      }
+      .account{
+         flex-direction: column;
+      }
+   }
+   
+   @media only screen and (max-width: 424px) {
+      #header .ui.avatar.image{
+         display: none;
+      }
+   }
+</style>
+</html>

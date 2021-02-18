@@ -1,0 +1,11 @@
+i.circular.icon{
+   -webkit-box-shadow: 0 0 0 0.1em #417ee5 inset !important;
+   box-shadow: 0 0 0 0.1em #417ee5 inset !important;
+   color: white !important;
+   background-color: #417ee5 !important;
+}
+
+#title{
+   font-weight: 700;
+   color: #417ee5;
+}

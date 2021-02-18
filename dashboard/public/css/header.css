@@ -1,0 +1,97 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:ital,wght@0,400;0,600;0,700;1,300&display=swap');
+
+body{
+   margin: 0 !important;
+   font-family: 'Open Sans', sans-serif !important;
+   letter-spacing: normal !important;
+}
+
+#logo{
+   background: none !important;
+}
+
+#logo:hover{
+   background: none !important;
+}
+
+#logo img{
+   width: 7.5em;
+}
+
+button, div.ui.button, a, h1, h2, h3, h4, h5{
+   letter-spacing: normal !important;
+}
+
+h1, h2, h3, h4, h5{
+   font-family: 'Montserrat' !important;;
+}
+
+button, input, a, div.ui.button, #user-dropdown{
+   font-family: 'Open Sans', sans-serif !important;
+}
+
+.ui.secondary.menu .item{
+   font-weight: 700;
+}
+
+.ui.secondary.menu.custom .dropdown.item:hover, .ui.secondary.menu.custom .link.item:hover, .ui.secondary.menu.custom a.item:hover{
+   background: rgba(65,126,229,.05);
+}
+
+.ui.dropdown#user-dropdown .item{
+   border-radius: 0 !important;
+}
+
+.ui.secondary.menu .item{
+   background: #6c60d40c;
+   color: #6b60d4;
+}
+
+.ui.secondary.menu .item:hover{
+   background: #6c60d428 !important;
+   color: #6b60d4 !important;
+}
+
+.ui.secondary.menu .active.item{
+   background-color: #7064da;
+   color: white;
+}
+
+.ui.secondary.menu .active.item:hover{
+   background-color: #4e469b !important;
+   color: white !important;
+}
+
+#header{
+   /* box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.25); */
+   z-index: 2;
+   position: relative !important;
+   /* background-color: #1e1e1e; */
+   background:  linear-gradient(45deg, #0f0c29, #302b63, #24243e);
+   background:  -webkit-linear-gradient(45deg, #0f0c29 10%, #302b63 70%, #24243e 180%);
+}
+
+#header .item{
+   font-weight: bold !important;
+}
+
+#header .item::before{
+   display: none !important;
+}
+
+#user{
+   cursor: pointer;
+}
+
+#user-dropdown .menu{
+   background-color: #232323 !important;
+   color: white !important;
+}
+
+.ui.menu .ui.dropdown .menu>.item{
+   color: white !important;
+}
+
+.ui.menu .ui.dropdown .menu>.item:hover{
+   color: #ffffff !important;
+}

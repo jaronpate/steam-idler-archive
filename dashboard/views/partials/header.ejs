@@ -1,0 +1,47 @@
+<%- include("./head.ejs") %>
+<body>
+   <div class="ui top fixed inverted menu custom" id="header">
+      <div class="item" id="logo">
+         <a href="/"><img src="/assets/branding/logo.svg"></a>
+      </div>
+      <a class="item" href="/support">Support</a>
+      <% if(typeof user !== "undefined" && user.subscription.type === 'free'){ %>
+         <a class="item" href="/dashboard/upgrade">Upgrade</a>
+      <% } %>
+      <!-- <a class="item" href="/dashboard">Dashboard</a> -->
+      <div class="right menu">
+         <% if(typeof user !== "undefined"){ %>
+            <div class="item" style="background: none !important;">
+               <div class="ui dropdown" id="user-dropdown">
+                  <img class="ui avatar image" src="<%-user.profile.avatar ? user.profile.avatar : '/assets/avatar.png'-%>" style="margin-right: 6px;">
+                  <span><%-user.profile.username ? user.profile.username : user.profile.steamId-%></span>
+                  <i class="dropdown icon" style="margin-left: 5px !important; vertical-align: middle;"></i>
+                  <div class="menu" style="margin-top: 5px;">
+                     <div class="header" style="text-transform: capitalize; color: white;"><a <%- user.subscription.type === 'free' ? "href='/dashboard/upgrade'" : ""-%> id="plan">Subscription: <%-user.subscription.type-%></a></div>
+                     <a class="item" href="/dashboard"><i class="toggle on icon"></i>Dashboard</a>
+                     <a class="item" href="/dashboard/billing"><i class="credit card icon"></i>Billing</a>
+                     <!-- <a class="item"><i class="shield alternate icon"></i>AdminCP</a>
+                     <a class="item"><i class="cog icon"></i>Settings</a> -->
+                     <a class="item" href="/logout" style="color: #d32f2f !important;"><i class="sign out alternate icon"></i>Logout</a>
+                  </div>
+               </div>
+            </div>
+         <% } else { %>
+            <a class="item" href="/login">Sign in</a>
+            <a class="item" href="/register">Register</a>
+         <% } %>
+      </div>
+   </div>
+   <script>
+      $('.ui.dropdown')
+      .dropdown();
+   </script>
+   <style>
+      #plan{
+         color: white;
+         transition: color 0.1s;
+      }
+      #plan:hover{
+         color: rgba(255, 255, 255, 0.52);
+      }
+   </style>
