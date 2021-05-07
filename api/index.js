@@ -99,7 +99,7 @@ app.post('/idlers/:id/delete', async (req, res) => {
   res.json(await idleManager.deleteIdler(req.params.id));
 });
 
-app.listen(process.env.PORT || 3000, () => {
+app.listen(3000, () => {
   console.log("API listening");
 });
 
