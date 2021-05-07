@@ -1,6 +1,6 @@
 class idler {
   constructor(config){
-    const Steam = require('steam');
+    // const Steam = require('steam');
     const SteamUser = require('steam-user');
     const SteamTotp = require('steam-totp');
     const cron = require('node-cron');
@@ -85,7 +85,7 @@ class idler {
             console.log('Idling: ' + playme.length + ' games, getting ' + (playme.length * 24) + ' hours per day | ' + (playme.length * 336) + ' hours per 2 weeks');
             client.gamesPlayed(playme);
             if (config.silent === false) {
-              client.setPersona(Steam.EPersonaState.Online);
+              // client.setPersona(Steam.EPersonaState.Online);
             };
             resolve(client);
           });
