@@ -5,7 +5,7 @@ const dotenv = require("dotenv")
 const Idler = require('./models/Idler')
 const cron = require('node-cron');
 
-dotenv.config();
+dotenv.config({path: `${__dirname}/.env`});
 
 const idleManager = new (require('./lib/idle-manager'));
 

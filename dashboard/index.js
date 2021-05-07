@@ -12,7 +12,7 @@ const express = require('express'),
       session = require('express-session'),
       MongoDBStore = require('connect-mongodb-session')(session);
 
-dotenv.config();
+dotenv.config({path: `${__dirname}/.env`});
 
 const stripe = require('stripe')(process.env.stripeKey);
 
