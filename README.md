@@ -3,7 +3,7 @@
   <p>A simple steam idling web app to farm hours in games</p>
 </span>
 <span align="center" style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center"> 
-<img src="./screenshots/landing.png" alt="landing page" height="400">
+<img src="./screenshots/landing.png" alt="landing page" height="500">
 <img src="./screenshots/add_account.png" alt="add account" height="250">
 <img src="./screenshots/dashboard.png" alt="dashboard" height="250">
 </span>
