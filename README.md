@@ -2,10 +2,10 @@
   <h1><b>Steam Idler</b></h1>
   <p>A simple steam idling web app to farm hours in games</p>
 </span>
-<span style="display: flex; flex-wrap: wrap; justify-content: center;"> 
-<img src="./screenshots/landing.png" alt="landing page" width="70%">
-<img src="./screenshots/add_account.png" alt="add account" width="45%">
-<img src="./screenshots/dashboard.png" alt="dashboard" width="45%">
+<span align="center" style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center"> 
+<img src="./screenshots/landing.png" alt="landing page" height="400">
+<img src="./screenshots/add_account.png" alt="add account" height="250">
+<img src="./screenshots/dashboard.png" alt="dashboard" height="250">
 </span>
 
 <h1>Setup</h1>
@@ -27,8 +27,8 @@ node dashboard/index.js
 <h3>There are two components: the <b>Dashboard</b> and the <b>API</b>.</h3>
 
 <span style="display: flex; flex-wrap: wrap; justify-content: center;"> 
-<img src="./screenshots/dashboard.png" alt="dashboard" width="48%">
-<img src="./screenshots/api.png" alt="api" width="48%">
+<img src="./screenshots/dashboard.png" alt="dashboard" height="250">
+<img src="./screenshots/api.png" alt="api" height="250">
 </span>
 
 <p>The <b>Dashboard</b> handles steam authentication and exposes a user friendly interface for creating, editing and deleting idlers. The <b>API</b> spawns and manages the idlers in workers and is completely seperate.</p>
