@@ -51,7 +51,7 @@ var store = new MongoDBStore({
    console.log('Store connected.')
 });
 
-mongoose.connect(process.env.db, { useNewUrlParser: true, useUnifiedTopology: true }).then(db => {
+mongoose.connect(process.env.db, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false }).then(db => {
    console.log(`Loaded database.`)
 
    cron.schedule('*/5 * * * *', () => {
@@ -98,11 +98,11 @@ app.use(passport.session());
 app.use((req, res, next) => { res.locals.message = req.flash(); next(); })
 
 passport.serializeUser(function(user, done) {
-   done(null, user);
+   done(null, user.id);
 });
  
-passport.deserializeUser(function(user, done) {
-   User.findOne({username: user.username}, (err, newUser) => {
+passport.deserializeUser(function(user_id, done) {
+   User.findById(user_id, (err, newUser) => {
       done(err, newUser);
    });
 });
@@ -150,8 +150,7 @@ app.get('/dashboard/accounts', loggedIn, (req, res) => {
       req.user.accounts.forEach(account => {
          let apiAccount = result.data.find(x => x.id === account.id)
          req.user.accounts[req.user.accounts.indexOf(account)].online = apiAccount.worker.online
-         req.user.accounts[req.user.accounts.indexOf(account)].hours = apiAccount.worker.hours
-         req.user.accounts[req.user.accounts.indexOf(account)].totalHours = apiAccount.worker.totalHours
+         req.user.accounts[req.user.accounts.indexOf(account)].stats = apiAccount.worker.stats
       });
       res.render('dashboard/index', {css: "dashboard/index", title: "Dashboard", user: req.user});
    }).catch(console.error);
@@ -174,6 +173,10 @@ app.post('/dashboard/accounts/add', loggedIn, (req, res) => {
    req.body.gamestoplay = req.body.gamestoplay.slice(0, req.user.subscription.gameLimit)
    axios.post(`${process.env.apiHost}/idlers/new`, req.body)
    .then((result) => {
+      if(result.data.error){
+         req.flash('error', result.error);
+         return res.redirect('/dashboard/accounts');
+      }
       User.findByIdAndUpdate(req.user._id, {$push: {accounts: {id: result.data, settings: req.body}}}, {useFindAndModify: true, new: true}, (err, newUser) => {
          if(err){res.redirect('/')}
          res.json(newUser)
@@ -204,23 +207,36 @@ app.post('/dashboard/accounts/:id/edit', loggedIn, (req, res) => {
 });
 
 app.post('/dashboard/accounts/:id/start', loggedIn, (req, res) => {
-   let owned = req.user.accounts.map(x => {if(x.id === req.params.id){return x}})[0];
+   let owned = req.user.accounts.find(x => x.id === req.params.id);
    axios.get(`${process.env.apiHost}/idlers`)
    .then(result => {
       let apiAccount = result.data.find(x => x.id === req.params.id)
-      if(owned && apiAccount.worker.hours < req.user.subscription.hourLimit){
+      if(owned && apiAccount.worker.stats.curHours < req.user.subscription.hourLimit){
          axios.post(`${process.env.apiHost}/idlers/${req.params.id}/start`, req.body)
          .then(result => {
             res.json(result.data)
          })
-      } else if (apiAccount.worker.hours >= req.user.subscription.hourLimit){
+      } else if (apiAccount.worker.stats.curHours >= req.user.subscription.hourLimit){
          res.json({error: 'Hour limit reached, please upgrade to idle more hours per month'})
       } else {res.json({error: 'Error proccessing request.'})}
    }).catch(console.error);
 });
 
+app.post('/dashboard/accounts/:id/code', loggedIn, (req, res) => {
+   let owned = req.user.accounts.find(x => x.id === req.params.id);
+   axios.get(`${process.env.apiHost}/idlers`)
+   .then(result => {
+      if(owned){
+         axios.post(`${process.env.apiHost}/idlers/${req.params.id}/code`, req.body)
+         .then(result => {
+            res.json(result.data)
+         })
+      } else {res.json({error: 'Error proccessing request.'})}
+   }).catch(console.error);
+});
+
 app.post('/dashboard/accounts/:id/stop', loggedIn, (req, res) => {
-   let owned = req.user.accounts.map(x => x.id === req.params.id);
+   let owned = req.user.accounts.find(x => x.id === req.params.id);
    if(owned){
       axios.post(`${process.env.apiHost}/idlers/${req.params.id}/stop`, null)
       .then(result => {

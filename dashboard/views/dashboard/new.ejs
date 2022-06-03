@@ -79,7 +79,7 @@
          automessage: autoMsg.value,
          silent: silent.checked,
       }
-      if(twofactor.value !== ""){
+      if(twofactor.value.trim() !== ""){
          settings.twofactorsecret
       }
       console.log(settings)

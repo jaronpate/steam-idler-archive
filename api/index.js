@@ -19,7 +19,7 @@ mongoose.connect(process.env.db, { useNewUrlParser: true, useUnifiedTopology: tr
     Idler.find({}, (err, idlers) => {
       idlers.forEach(async idler => {
         if(idler.id){idler.settings.id = idler.id}
-        idler.settings.hours = idler.stats.hours
+        idler.settings.curHours = idler.stats.curHours
         idler.settings.totalHours = idler.stats.totalHours
         await idleManager.spawnIdler(idler.settings);
         console.log(`Spawned ${idler.settings.id || idler.id} idler.`)
@@ -28,7 +28,7 @@ mongoose.connect(process.env.db, { useNewUrlParser: true, useUnifiedTopology: tr
   }, 1000);
   cron.schedule('*/5 * * * *', () => {
     idleManager.idlers.forEach(idler => {
-      Idler.findOneAndUpdate({id: idler.id}, {'stats.hours': idler.worker.hours}, {useFindAndModify: false, new: true}, (err, newIdler) => {
+      Idler.findOneAndUpdate({id: idler.id}, {'stats.hours': idler.worker.stats.curHours}, {useFindAndModify: false, new: true}, (err, newIdler) => {
         if(err){console.log(err)}
       });
     });
@@ -49,7 +49,7 @@ app.get('/idlers', (req, res) => {
 
 app.post('/idlers/new', async (req, res) => {
   let response = await idleManager.spawnIdler(req.body)
-  Idler.create({settings: req.body, id: req.body.id || response}, (err, idler) => {
+  Idler.create({settings: req.body, id: response}, (err, idler) => {
     if(err && err.code === 11000){return res.json({error: 'Idler with that id/username already exists.'})}
     if(err){return res.json({error: 'Error creating new idler.'})}
     res.json(response);
@@ -57,7 +57,12 @@ app.post('/idlers/new', async (req, res) => {
 });
 
 app.post('/idlers/:id/start', async (req, res) => {
-  let response = await idleManager.startIdler(req.params.id, req.body.code)
+  let response = await idleManager.startIdler(req.params.id)
+  res.json(response);
+});
+
+app.post('/idlers/:id/code', async (req, res) => {
+  let response = await idleManager.authorizeIdler(req.params.id, req.body.code)
   res.json(response);
 });
 
@@ -71,7 +76,7 @@ app.post('/idlers/:id/edit', async (req, res) => {
 
 app.post('/idlers/:id/stop', (req, res) => {
   let idler = idleManager.idlers.find(x => {if(x.id === req.params.id){return x}})
-  Idler.findOneAndUpdate({id: req.params.id}, {'stats.hours': idler.worker.hours}, {useFindAndModify: false}, async (err, idler) => {
+  Idler.findOneAndUpdate({id: req.params.id}, {'stats.hours': idler.worker.stats.curHours}, {useFindAndModify: false}, async (err, idler) => {
     if(err){return res.json({error: err})}
     let response = await idleManager.stopIdler(req.params.id)
     res.json(response);
@@ -84,7 +89,7 @@ app.post('/idlers/:id/restart', async (req, res) => {
 
 app.post('/idlers/:id/reset', async (req, res) => {
   let idler = idleManager.idlers.find(x => {if(x.id === req.params.id){return x}})
-  Idler.findOneAndUpdate({id: req.params.id}, {stats: {hours: 0, totalHours: idler.worker.hours}}, {useFindAndModify: false, new: true}, async (err, newIdler) => {
+  Idler.findOneAndUpdate({id: req.params.id}, {stats: {hours: 0, totalHours: idler.worker.stats.curHours}}, {useFindAndModify: false, new: true}, async (err, newIdler) => {
     let response = await idleManager.respawnIdler(req.params.id)
     console.log(err)
     console.log(newIdler)

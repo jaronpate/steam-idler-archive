@@ -14,13 +14,13 @@
          <div class="info">
             <i class="circle icon" style="color: <%- account.online ? '#14b363' : '#833a3a' -%>;" id="statusIcon"></i>
             <h4><%-account.settings.username-%></h4>
-            <span class="stat"><%-account.totalHours + account.hours-%> hrs</span>
+            <span class="stat"><%-account.stats.totalHours + account.stats.curHours-%> hrs</span>
             <span class="stat"><%-account.settings.gamestoplay.length-%> / <%-user.subscription.gameLimit-%> game<%-user.subscription.gameLimit > 1 ? 's' : ''-%></span>
          </div>
          <div class="controls">
             <a class="dButton" href="/dashboard/accounts/<%-account.id-%>">Edit</a>
             <a class="dButton stop" onclick="stop('<%-account.id-%>')">Stop</a>
-            <a class="dButton start startBtn" onclick="setStartAccount('<%-account.id-%>')">Start</a>
+            <a class="dButton start startBtn" onclick="start('<%-account.id-%>')">Start</a>
             <a class="dButtonSmall remove" href="/dashboard/accounts/<%-account.id-%>/delete"><i class="trash icon"></i></a>
          </div>
       </div>
@@ -39,7 +39,7 @@
          <input type="hidden" id="accountId">
       </div>
       <div class="actions">
-        <a class="ui approve dButton start" onclick="start()">Start Idler</a>
+        <a class="ui approve dButton start" onclick="authorize()">Start Idler</a>
         <a class="ui cancel dButton">Cancel</a>
       </div>
     </div>
@@ -56,12 +56,11 @@
       toast.addEventListener('mouseleave', Swal.resumeTimer)
    }
    });
-   
    <% if(locals.message.error){ %>
-      Toast.fire({
-         icon: 'error',
-         title: "<%-message.error-%>"
-      })
+         Toast.fire({
+            icon: 'error',
+            title: "<%-message.error-%>"
+         })
    <% } %>
 
    let accountId = document.getElementById('accountId');
@@ -74,33 +73,33 @@
          location.reload()
       })
    }
-   function start(){
+   function start(id){
+      accountId.value = id;
       statusIcon.classList = "sync icon loadingIcon"
-      $.post(`/dashboard/accounts/${accountId.value}/start`, {code: authCode.value})
+      $.post(`/dashboard/accounts/${id}/start`)
       .then(data => {
-         console.log(authCode.value)
-         authCode.value = '';
-         accountId.value = '';
          console.log(data);
          if(data.error){
             Toast.fire({
                icon: 'error',
-               title: (data.error.eresult) ? 'Rate limited...': data.error
+               title: (data.error.eresult) ? 'Client Error': data.error
             })
             statusIcon.classList = "exclamation triangle icon errorIcon"
+         }
+         else if (data.domain){
+            $('.ui.modal')
+               .modal('show');
          }
          else{location.reload()}
       })
    }
-   function setStartAccount(id){
-      accountId.value = id
+   function authorize(){
+      $.post(`/dashboard/accounts/${accountId.value}/code`, {code: authCode.value})
+      .then(data => {
+         authCode.value = '';
+         accountId.value = '';
+      })
    }
-   document.querySelectorAll('.startBtn').forEach(el => {
-      el.addEventListener('click', (e) => {
-         $('.ui.modal')
-         .modal('show');
-      });
-   });
 </script>
 <style>
    @-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
@@ -133,7 +132,7 @@
       display: flex;
       flex-direction: row;
       justify-content: space-between;
-      margin: 10px auto;
+      margin: 18px auto;
    }
    .account h4{
       display: inline;

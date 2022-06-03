@@ -11,8 +11,7 @@
     "express": "^4.17.1",
     "mongoose": "^5.9.25",
     "node-cron": "^2.0.3",
-    "steam": "^1.4.1",
     "steam-totp": "^2.1.1",
-    "steam-user": "^4.19.3"
+    "steam-user": "^4.24.2"
   }
 }
